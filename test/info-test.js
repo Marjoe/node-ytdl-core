@@ -168,7 +168,7 @@ describe('ytdl.getInfo()', function() {
       ytdl.getInfo(id, function(err) {
         assert.ok(err);
         scope.done();
-        assert.ok(/requires payment/.test(err.message));
+        assert.ok(/requires purchase/.test(err.message));
         done();
       });
     });
@@ -316,6 +316,21 @@ describe('ytdl.getInfo()', function() {
         scope.done();
         assert.ok(err);
         assert.equal(err.message, 'No formats found');
+        done();
+      });
+    });
+
+    it('Fails gracefully when unable to parse player_response', function(done) {
+      var id = '_HSylqgVYQI';
+      var scope = nock(id, {
+        type: 'regular',
+        watch: 'bad-player-response',
+        get_video_info: true,
+      });
+      ytdl.getInfo(id, function(err) {
+        scope.done();
+        assert.ok(err);
+        assert.ok(/Error parsing `player_response`:/.test(err.message));
         done();
       });
     });
